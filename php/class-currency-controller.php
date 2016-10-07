@@ -60,6 +60,12 @@ class Currency_Controller {
 	 * @return bool|null|string
 	 */
 	public function detect_currency() {
+
+		$forced = apply_filters( 'yoast_detect_visitor_currency', null );
+		if ( ! is_null( $forced ) ) {
+			return $forced;
+		}
+
 		$currency = $this->get_currency_from_cookie();
 		if ( $currency ) {
 			return $currency;
