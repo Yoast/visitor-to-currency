@@ -4,8 +4,9 @@ namespace Yoast\YoastCom\VisitorCurrency;
 
 class Currency_Controller {
 
-	protected $default_currency = 'USD';
+	protected $default_currency;
 	protected $currency;
+	protected $currencies = array();
 
 	protected $currency_cookie;
 
@@ -22,13 +23,32 @@ class Currency_Controller {
 		if ( ! isset( self::$instance ) ) {
 			self::$instance = new self( new IP_To_Country(), new Country_To_Currency(), new Language_To_Country() );
 			self::$instance->set_currency_cookie_name( 'yoast_cart_currency' );
+			self::$instance->add_currency( 'USD', true );
+			self::$instance->add_currency( 'EUR' );
 		}
 
 		return self::$instance;
 	}
 
 	/**
+	 * @param      $currency
+	 * @param bool $default
+	 */
+	public function add_currency( $currency, $default = false ) {
+		if ( $default ) {
+			array_unshift( $this->currencies, $currency );
+			$this->default_currency = $currency;
+		} else {
+			$this->currencies[] = $currency;
+		}
+
+		$this->currencies = array_unique( $this->currencies );
+	}
+
+	/**
 	 * Currency_Controller constructor.
+	 *
+	 * @todo SRP: re-structure to add a lookup with a priority
 	 *
 	 * @param Lookup_Interface $ip_to_country
 	 * @param Lookup_Interface $country_to_currency
@@ -41,9 +61,15 @@ class Currency_Controller {
 	}
 
 	/**
-	 * @return bool|null|string
+	 * @param null|string $force_currency
+	 *
+	 * @return string
 	 */
-	public function get_currency() {
+	public function get_currency( $force_currency = null ) {
+		if ( ! is_null( $force_currency ) && $this->is_valid_currency( $force_currency ) ) {
+			return $force_currency;
+		}
+
 		if ( ! isset( $this->currency ) ) {
 			$this->currency = $this->detect_currency();
 		}
@@ -51,9 +77,29 @@ class Currency_Controller {
 		return $this->currency;
 	}
 
+	/**
+	 * @param $currency
+	 */
 	public function set_currency( $currency ) {
+		if ( ! $this->is_valid_currency( $currency ) ) {
+			throw new \InvalidArgumentException( 'Invalid currency supplied: ' . $currency );
+		}
+
 		$this->currency = $currency;
 		$this->set_currency_cookie( $currency );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function get_currencies() {
+		// If a currency is forced, only return this.
+		$forced = apply_filters( 'yoast_detect_visitor_currency', null );
+		if ( $forced ) {
+			return array( $forced );
+		}
+
+		return $this->currencies;
 	}
 
 	/**
@@ -120,22 +166,26 @@ class Currency_Controller {
 
 	/**
 	 * @param string $amount Amount to format
+	 * @param null   $use_currency
 	 *
 	 * @return string
 	 */
-	public function format_price( $amount ) {
+	public function format_price( $amount, $use_currency = null ) {
 		if ( preg_match( '/\.00$/', $amount ) ) {
 			$amount = str_replace( '.00', '', $amount );
 		}
 
-		return sprintf( '%s %s', $this->get_currency_display(), $amount );
+		return sprintf( '%s %s', $this->get_currency_display( $use_currency ), $amount );
 	}
 
 	/**
+	 * @param null $use_currency
+	 *
 	 * @return string
 	 */
-	public function get_currency_display() {
-		switch ( $this->get_currency() ) {
+	public function get_currency_display( $use_currency = null ) {
+		$currency = is_null( $use_currency ) ? $this->get_currency() : $use_currency;
+		switch ( $currency ) {
 			case 'EUR':
 				return '&euro;';
 		}
@@ -146,7 +196,7 @@ class Currency_Controller {
 	/**
 	 * @return null
 	 */
-	private function get_currency_from_headers() {
+	protected function get_currency_from_headers() {
 
 		$accept_language = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 		$country         = $this->language_to_country->lookup( $accept_language );
@@ -157,11 +207,32 @@ class Currency_Controller {
 		return $this->country_to_currency->lookup( $country );
 	}
 
-	private function get_currency_cookie_name() {
+	/**
+	 * @return mixed
+	 */
+	protected function get_currency_cookie_name() {
 		return $this->currency_cookie;
 	}
 
-	private function set_currency_cookie_name( $currency_cookie_name ) {
+	/**
+	 * @param $currency_cookie_name
+	 */
+	protected function set_currency_cookie_name( $currency_cookie_name ) {
 		$this->currency_cookie = $currency_cookie_name;
+	}
+
+	/**
+	 * @param $currency
+	 *
+	 * @return bool
+	 */
+	protected function is_valid_currency( $currency ) {
+		// If a currency is forced, only return this.
+		$forced = apply_filters( 'yoast_detect_visitor_currency', null );
+		if ( $forced ) {
+			return $forced == $currency;
+		}
+
+		return in_array( $currency, $this->currencies );
 	}
 }
