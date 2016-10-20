@@ -165,7 +165,9 @@ class Currency_Controller {
 	 * @return null
 	 */
 	private function get_currency_from_IP() {
-		$country = $this->ip_to_country->lookup( $_SERVER['REMOTE_ADDR'] );
+		$IP = isset( $_SERVER['HTTP_X_SUCURI_CLIENTIP'] ) ? $_SERVER['HTTP_X_SUCURI_CLIENTIP'] : $_SERVER['REMOTE_ADDR'];
+
+		$country = $this->ip_to_country->lookup( $IP );
 		if ( is_null( $country ) ) {
 			return null;
 		}
