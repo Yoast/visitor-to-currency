@@ -78,6 +78,15 @@ class Currency_Controller {
 	}
 
 	/**
+	 * Get the default currency
+	 *
+	 * @return string
+	 */
+	public function get_default_currency() {
+		return $this->default_currency;
+	}
+
+	/**
 	 * @param $currency
 	 */
 	public function set_currency( $currency ) {
