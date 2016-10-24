@@ -15,6 +15,7 @@ class Country_To_Currency implements Lookup_Interface {
 			'FR',
 			'DE',
 			'GR',
+			'EL',
 			'IE',
 			'IT',
 			'LV',
