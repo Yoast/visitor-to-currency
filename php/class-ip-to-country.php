@@ -10,7 +10,7 @@ class IP_To_Country implements Lookup_Interface {
 	 *
 	 * @param string $IP IP to lookup
 	 *
-	 * @return null
+	 * @return string|null
 	 */
 	public function lookup( $IP ) {
 
