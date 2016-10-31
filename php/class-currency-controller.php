@@ -241,7 +241,7 @@ class Currency_Controller {
 		$currency = null;
 
 		if ( ! empty( $_COOKIE['yoast_cart_currency_manual'] ) ) {
-//			return $currency;
+			return $currency;
 		}
 
 		if ( ! empty( $_POST['billing_country'] ) ) {
