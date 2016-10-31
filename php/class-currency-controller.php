@@ -72,6 +72,7 @@ class Currency_Controller {
 
 		if ( ! isset( $this->currency ) ) {
 			$this->currency = $this->detect_currency();
+			$this->set_currency_cookie( $this->currency );
 		}
 
 		return $this->currency;
@@ -121,6 +122,11 @@ class Currency_Controller {
 			return $forced;
 		}
 
+		$currency = $this->get_currency_from_cart();
+		if ( $currency ) {
+			return $currency;
+		}
+
 		$currency = $this->get_currency_from_cookie();
 		if ( $currency ) {
 			return $currency;
@@ -147,8 +153,9 @@ class Currency_Controller {
 	 * @return string|bool
 	 */
 	private function get_currency_from_cookie() {
-		if ( isset( $_COOKIE[ $this->get_currency_cookie_name() ] ) ) {
-			return $_COOKIE[ $this->get_currency_cookie_name() ];
+		$cookie_name = $this->get_currency_cookie_name();
+		if ( isset( $_COOKIE[ $cookie_name ] ) ) {
+			return $_COOKIE[ $cookie_name ];
 		}
 
 		return false;
@@ -158,7 +165,13 @@ class Currency_Controller {
 	 * @param $currency
 	 */
 	private function set_currency_cookie( $currency ) {
-		setcookie( $this->get_currency_cookie_name(), $currency, YEAR_IN_SECONDS, '/', '.yoast.com' );
+		$cookie_name = $this->get_currency_cookie_name();
+		if ( $_COOKIE[ $cookie_name ] == $currency ) {
+			return;
+		}
+
+		setcookie( $cookie_name, $currency, $_SERVER['REQUEST_TIME'] + YEAR_IN_SECONDS, '/', '.yoast.dev' );
+		setcookie( $cookie_name, $currency, $_SERVER['REQUEST_TIME'] + YEAR_IN_SECONDS, '/', '.yoast.com' );
 	}
 
 	/**
@@ -205,17 +218,46 @@ class Currency_Controller {
 	}
 
 	/**
-	 * @return null
+	 * @return null|string Currency if detected, otherwise null
 	 */
 	protected function get_currency_from_headers() {
 
 		$accept_language = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 		$country         = $this->language_to_country->lookup( $accept_language );
-		if ( is_null( $country ) ) {
-			return null;
+		$currency        = null;
+		if ( ! is_null( $country ) ) {
+			$currency = $this->country_to_currency->lookup( $country );
 		}
 
-		return $this->country_to_currency->lookup( $country );
+		return $currency;
+	}
+
+	/**
+	 * Detect currency from selected country in the cart
+	 *
+	 * @return null|string Currency if detected, otherwise null
+	 */
+	protected function get_currency_from_cart() {
+		$currency = null;
+
+		if ( ! empty( $_COOKIE['yoast_cart_currency_manual'] ) ) {
+//			return $currency;
+		}
+
+		if ( ! empty( $_POST['billing_country'] ) ) {
+			$billing_country = $_POST['billing_country'];
+		} else {
+			$billing_country = edd_get_shop_country();
+		}
+
+		if ( ! empty( $billing_country ) ) {
+			$currency = $this->country_to_currency->lookup( $billing_country );
+			if ( 'USD' === $currency ) {
+				$currency = null;
+			}
+		}
+
+		return $currency;
 	}
 
 	/**

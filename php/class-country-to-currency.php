@@ -40,7 +40,7 @@ class Country_To_Currency implements Lookup_Interface {
 	 */
 	public function lookup( $country ) {
 		foreach ( $this->list as $currency => $countries ) {
-			if ( isset( $countries[ $country ] ) ) {
+			if ( in_array( $country, $countries ) ) {
 				return $currency;
 			}
 		}
