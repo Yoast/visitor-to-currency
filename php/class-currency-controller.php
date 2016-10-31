@@ -244,10 +244,13 @@ class Currency_Controller {
 			return $currency;
 		}
 
+		$billing_country = null;
 		if ( ! empty( $_POST['billing_country'] ) ) {
 			$billing_country = $_POST['billing_country'];
 		} else {
-			$billing_country = edd_get_shop_country();
+			if ( function_exists( 'edd_get_shop_country' ) ) {
+				$billing_country = edd_get_shop_country();
+			}
 		}
 
 		if ( ! empty( $billing_country ) ) {
