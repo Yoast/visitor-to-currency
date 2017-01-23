@@ -6,5 +6,14 @@
             "email": "support@yoast.com"
         }
     ],
+    "autoload": {
+        "classmap": [
+            "php/class-currency-controller.php",
+            "php/class-lookup-interface.php",
+            "php/class-ip-to-country.php",
+            "php/class-country-to-currency.php",
+            "php/class-languate-to-country.php"
+        ]
+    },
     "require": {}
 }
