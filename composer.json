@@ -1,0 +1,19 @@
+{
+    "name": "yoast/visitor-to-currency",
+    "authors": [
+        {
+            "name": "Team Yoast",
+            "email": "support@yoast.com"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "php/class-currency-controller.php",
+            "php/class-lookup-interface.php",
+            "php/class-ip-to-country.php",
+            "php/class-country-to-currency.php",
+            "php/class-language-to-country.php"
+        ]
+    },
+    "require": {}
+}
