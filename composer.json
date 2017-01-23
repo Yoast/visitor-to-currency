@@ -12,7 +12,7 @@
             "php/class-lookup-interface.php",
             "php/class-ip-to-country.php",
             "php/class-country-to-currency.php",
-            "php/class-languate-to-country.php"
+            "php/class-language-to-country.php"
         ]
     },
     "require": {}
