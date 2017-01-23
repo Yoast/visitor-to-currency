@@ -1,0 +1,10 @@
+{
+    "name": "yoast/visitor-to-currency",
+    "authors": [
+        {
+            "name": "Team Yoast",
+            "email": "support@yoast.com"
+        }
+    ],
+    "require": {}
+}
