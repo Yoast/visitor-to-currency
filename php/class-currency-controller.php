@@ -166,7 +166,7 @@ class Currency_Controller {
 	 */
 	private function set_currency_cookie( $currency ) {
 		$cookie_name = $this->get_currency_cookie_name();
-		if ( $_COOKIE[ $cookie_name ] == $currency ) {
+		if ( isset( $_COOKIE[ $cookie_name ] ) && $_COOKIE[ $cookie_name ] == $currency ) {
 			return;
 		}
 
