@@ -66,6 +66,10 @@ class Currency_Controller {
 	 * @return string
 	 */
 	public function get_currency( $force_currency = null ) {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return $this->default_currency;
+		}
+
 		if ( ! is_null( $force_currency ) && $this->is_valid_currency( $force_currency ) ) {
 			return $force_currency;
 		}
@@ -91,6 +95,10 @@ class Currency_Controller {
 	 * @param $currency
 	 */
 	public function set_currency( $currency ) {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return;
+		}
+
 		if ( ! $this->is_valid_currency( $currency ) ) {
 			throw new \InvalidArgumentException( 'Invalid currency supplied: ' . $currency );
 		}
