@@ -5,12 +5,21 @@
  * @package Yoast\YoastCom\VisitorCurrency
  */
 class Currency {
+	/**
+	 * @var string
+	 */
 	private $code;
+
+	/**
+	 * @var string
+	 */
 	private $label;
+
 	/**
 	 * @var bool
 	 */
 	private $enabled;
+
 	/**
 	 * @var bool
 	 */

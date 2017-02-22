@@ -46,10 +46,6 @@ class Currency_Controller {
 
 			self::$instance->set_currency_cookie_name( 'yoast_cart_currency' );
 			self::$instance->add_supported_currencies();
-
-//			if ( self::$instance->get_currency_from_cookie() === false ) {
-//				self::$instance->set_currency_cookie( self::$instance->currency_manager->get_default_currency()->get_code() );
-//			}
 		}
 
 		return self::$instance;
@@ -321,6 +317,7 @@ class Currency_Controller {
 	public function set_currency_cookie( $currency ) {
 		$cookie_name = $this->get_currency_cookie_name();
 
+		// If the cookie already exists and contains the value we want to set, we can just return immediately.
 		if ( isset( $_COOKIE[ $cookie_name ] ) && $_COOKIE[ $cookie_name ] == $currency ) {
 			return;
 		}

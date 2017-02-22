@@ -48,7 +48,7 @@ class Country_To_Currency implements Lookup_Interface {
 	}
 
 	/**
-	 * Converts country to currency
+	 * Converts country to currency.
 	 *
 	 * @param string $country Country to check.
 	 *
@@ -56,7 +56,7 @@ class Country_To_Currency implements Lookup_Interface {
 	 */
 	public function lookup( $country ) {
 		foreach ( $this->list as $currency => $countries ) {
-			if ( in_array( $country, $countries, false ) ) {
+			if ( in_array( $country, $countries ) ) {
 				return $currency;
 			}
 		}
