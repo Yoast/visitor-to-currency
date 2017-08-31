@@ -66,6 +66,8 @@ class Currency_Controller {
 	 * @return string
 	 */
 	public function get_currency( $force_currency = null ) {
+		return 'USD';
+		
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			return $this->default_currency;
 		}
